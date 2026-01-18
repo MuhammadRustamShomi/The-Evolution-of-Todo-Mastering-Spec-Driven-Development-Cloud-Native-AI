@@ -1,0 +1,27 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(specifyplus init:*)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 specifyplus init:*)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 echo:*)",
+      "Bash(powershell.exe -Command:*)",
+      "Bash(NO_COLOR=1 TERM=dumb specifyplus init:*)",
+      "Bash(uv tool install:*)",
+      "Bash(specify init:*)",
+      "Bash(PYTHONUTF8=1 PYTHONIOENCODING=utf-8 specify init:*)",
+      "Bash(cat:*)",
+      "Bash(ls:*)",
+      "Bash(find:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(\"C:\\\\Users\\\\dell\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python312\\\\python.exe\" -m pytest tests/ -v --tb=short)",
+      "Bash(mkdir:*)",
+      "Bash(chmod:*)",
+      "Bash(uv run pytest:*)",
+      "Bash(git init:*)",
+      "Bash(git remote add:*)",
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Complete Phase I-IV implementation\n\nProject: The Evolution of Todo - Mastering Spec-Driven Development & Cloud Native AI\n\nCompleted:\n- Phase I: Console App \\(Python CLI with 71 passing tests\\)\n- Phase II: Web App \\(FastAPI backend + Next.js frontend\\)\n- Phase III: AI Chatbot \\(OpenAI Agents SDK + MCP integration\\)\n- Phase IV: Local Kubernetes \\(Helm charts ready\\)\n\nIncludes:\n- Comprehensive specification documents \\(specify.md, plan.md, tasks.md\\)\n- Project constitution for governance\n- Docker Compose setup for local development\n- Full test suites for all phases\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+    ]
+  }
+}

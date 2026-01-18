@@ -1,0 +1,59 @@
+Thank you for installing {{ .Chart.Name }}!
+
+Your release is named {{ .Release.Name }}.
+
+To learn more about the release, try:
+
+  $ helm status {{ .Release.Name }}
+  $ helm get all {{ .Release.Name }}
+
+{{- if .Values.ingress.enabled }}
+
+The application is accessible at:
+{{- range .Values.ingress.hosts }}
+  http://{{ .host }}
+{{- end }}
+
+Make sure to add the following entry to your /etc/hosts file (or use DNS):
+{{- range .Values.ingress.hosts }}
+  <INGRESS_IP>  {{ .host }}
+{{- end }}
+
+To get the Ingress IP:
+  $ kubectl get ingress {{ include "todo.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+{{- else }}
+
+To access the application, run:
+
+  $ kubectl port-forward svc/{{ include "todo.fullname" . }}-frontend 3000:3000 -n {{ .Release.Namespace }}
+
+Then open http://localhost:3000 in your browser.
+
+{{- end }}
+
+Backend API is available at:
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http://{{ .host }}/api
+{{- end }}
+{{- else }}
+  $ kubectl port-forward svc/{{ include "todo.fullname" . }}-backend 8000:8000 -n {{ .Release.Namespace }}
+{{- end }}
+
+{{- if .Values.aiService.enabled }}
+
+AI Chat is available at:
+{{- if .Values.ingress.enabled }}
+{{- range .Values.ingress.hosts }}
+  http://{{ .host }}/chat
+{{- end }}
+{{- else }}
+  $ kubectl port-forward svc/{{ include "todo.fullname" . }}-ai-service 8001:8001 -n {{ .Release.Namespace }}
+{{- end }}
+{{- end }}
+
+To run tests:
+  $ helm test {{ .Release.Name }}
+
+For more information, visit: https://github.com/todo-app
