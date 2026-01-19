@@ -1,0 +1,17 @@
+# Core FastAPI
+fastapi>=0.115.0
+uvicorn[standard]>=0.32.0
+
+# Database
+sqlmodel>=0.0.22
+asyncpg>=0.30.0
+greenlet>=3.1.0
+
+# Settings & Validation
+pydantic-settings>=2.6.0
+pydantic[email]>=2.0.0
+
+# Authentication
+python-jose[cryptography]>=3.3.0
+bcrypt>=4.0.0
+python-multipart>=0.0.12

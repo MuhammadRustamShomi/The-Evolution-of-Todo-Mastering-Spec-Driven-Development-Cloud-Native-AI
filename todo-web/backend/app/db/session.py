@@ -1,23 +1,36 @@
 """Database session configuration."""
 
+import os
 from collections.abc import AsyncGenerator
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
+from sqlalchemy.pool import NullPool
 from sqlmodel import SQLModel
 
 from app.config import get_settings
 
 settings = get_settings()
 
-engine = create_async_engine(
-    settings.database_url,
-    echo=settings.debug,
-    future=True,
-    pool_pre_ping=True,
-    pool_size=5,
-    max_overflow=10,
-)
+# Use NullPool for serverless environments (Vercel, AWS Lambda, etc.)
+# This prevents connection pool issues in ephemeral compute
+is_serverless = os.environ.get("VERCEL") or os.environ.get("AWS_LAMBDA_FUNCTION_NAME")
+
+engine_kwargs = {
+    "echo": settings.debug,
+    "future": True,
+}
+
+if is_serverless:
+    # Serverless: disable connection pooling (database handles it)
+    engine_kwargs["poolclass"] = NullPool
+else:
+    # Traditional server: use connection pooling
+    engine_kwargs["pool_pre_ping"] = True
+    engine_kwargs["pool_size"] = 5
+    engine_kwargs["max_overflow"] = 10
+
+engine = create_async_engine(settings.database_url, **engine_kwargs)
 
 async_session = sessionmaker(
     engine,
