@@ -1,13 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import type { Task, TaskPriority } from '@/types';
-import { X } from 'lucide-react';
+import { X, AlertCircle } from 'lucide-react';
 
 const taskSchema = z.object({
   title: z.string().min(1, 'Title is required').max(200),
@@ -27,6 +27,7 @@ interface TaskFormProps {
 export function TaskForm({ task, onClose }: TaskFormProps) {
   const queryClient = useQueryClient();
   const isEditing = !!task;
+  const [error, setError] = useState<string | null>(null);
 
   const {
     register,
@@ -60,11 +61,15 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         description: data.description || undefined,
         priority: data.priority as TaskPriority,
         due_date: data.due_date || undefined,
-        tags: data.tags ? data.tags.split(',').map((t) => t.trim()) : [],
+        tags: data.tags ? data.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       }),
     onSuccess: () => {
+      setError(null);
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onClose();
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Failed to create task. Please try again.');
     },
   });
 
@@ -75,11 +80,15 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         description: data.description || undefined,
         priority: data.priority as TaskPriority,
         due_date: data.due_date || undefined,
-        tags: data.tags ? data.tags.split(',').map((t) => t.trim()) : [],
+        tags: data.tags ? data.tags.split(',').map((t) => t.trim()).filter(Boolean) : [],
       }),
     onSuccess: () => {
+      setError(null);
       queryClient.invalidateQueries({ queryKey: ['tasks'] });
       onClose();
+    },
+    onError: (err: Error) => {
+      setError(err.message || 'Failed to update task. Please try again.');
     },
   });
 
@@ -107,6 +116,13 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)} className="p-4 space-y-4">
+          {error && (
+            <div className="flex items-center gap-2 p-3 bg-red-50 border border-red-200 rounded-lg text-red-700 text-sm">
+              <AlertCircle className="w-4 h-4 flex-shrink-0" />
+              <span>{error}</span>
+            </div>
+          )}
+
           <div>
             <label htmlFor="title" className="label">
               Title

@@ -1,14 +1,14 @@
 """Database session configuration."""
 
 import os
-import re
 from collections.abc import AsyncGenerator
 from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
+import bcrypt
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.pool import NullPool
-from sqlmodel import SQLModel
+from sqlmodel import SQLModel, select
 
 from app.config import get_settings
 
@@ -76,6 +76,41 @@ async def create_db_and_tables() -> None:
     """Create all database tables."""
     async with engine.begin() as conn:
         await conn.run_sync(SQLModel.metadata.create_all)
+
+    # Seed test user
+    await seed_test_user()
+
+
+async def seed_test_user() -> None:
+    """Seed a test user if it doesn't exist."""
+    from app.models.user import User
+
+    test_email = "test@example.com"
+    test_password = "password123"
+
+    async with async_session() as session:
+        # Check if test user already exists
+        statement = select(User).where(User.email == test_email)
+        result = await session.execute(statement)
+        existing_user = result.scalar_one_or_none()
+
+        if existing_user:
+            return  # Test user already exists
+
+        # Hash the password
+        password_bytes = test_password.encode("utf-8")[:72]
+        hashed_password = bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
+
+        # Create test user
+        test_user = User(
+            email=test_email,
+            name="Test User",
+            hashed_password=hashed_password,
+            email_verified=True,
+        )
+        session.add(test_user)
+        await session.commit()
+        print(f"✅ Test user created: {test_email} / {test_password}")
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:

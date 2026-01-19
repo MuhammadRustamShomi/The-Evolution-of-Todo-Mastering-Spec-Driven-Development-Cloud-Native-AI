@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { api } from '@/lib/api';
 import { TaskCard } from './task-card';
 import { TaskListSkeleton } from './task-list-skeleton';
@@ -21,6 +21,21 @@ export function TaskList({
   onEditTask,
 }: TaskListProps) {
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
+  const queryClient = useQueryClient();
+
+  const markDoneMutation = useMutation({
+    mutationFn: (taskId: string) => api.markTaskDone(taskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
+
+  const markPendingMutation = useMutation({
+    mutationFn: (taskId: string) => api.markTaskPending(taskId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['tasks'] });
+    },
+  });
 
   const { data: tasks, isLoading } = useQuery({
     queryKey: ['tasks', { status, dueBefore, dueAfter }],
@@ -48,9 +63,9 @@ export function TaskList({
       if (tasks && selectedIndex >= 0 && selectedIndex < tasks.length) {
         const task = tasks[selectedIndex];
         if (task.status === 'done') {
-          api.markTaskPending(task.id);
+          markPendingMutation.mutate(task.id);
         } else {
-          api.markTaskDone(task.id);
+          markDoneMutation.mutate(task.id);
         }
       }
     };
