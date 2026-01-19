@@ -1,11 +1,11 @@
 """Authentication service."""
 
-from datetime import datetime, timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Optional
 from uuid import UUID
 
+import bcrypt
 from jose import JWTError, jwt
-from passlib.context import CryptContext
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlmodel import select
 
@@ -13,7 +13,6 @@ from app.config import get_settings
 from app.models.user import User, UserCreate
 
 settings = get_settings()
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 
 class AuthService:
@@ -25,24 +24,28 @@ class AuthService:
     @staticmethod
     def verify_password(plain_password: str, hashed_password: str) -> bool:
         """Verify a password against its hash."""
-        return pwd_context.verify(plain_password, hashed_password)
+        # bcrypt has a 72-byte limit, truncate to match hashing
+        password_bytes = plain_password.encode("utf-8")[:72]
+        return bcrypt.checkpw(password_bytes, hashed_password.encode("utf-8"))
 
     @staticmethod
     def hash_password(password: str) -> str:
         """Hash a password."""
-        return pwd_context.hash(password)
+        # bcrypt has a 72-byte limit
+        password_bytes = password.encode("utf-8")[:72]
+        return bcrypt.hashpw(password_bytes, bcrypt.gensalt()).decode("utf-8")
 
     @staticmethod
     def create_access_token(user_id: UUID) -> str:
         """Create a JWT access token."""
-        expire = datetime.utcnow() + timedelta(minutes=settings.access_token_expire_minutes)
+        expire = datetime.now(UTC) + timedelta(minutes=settings.access_token_expire_minutes)
         to_encode = {"sub": str(user_id), "exp": expire, "type": "access"}
         return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 
     @staticmethod
     def create_refresh_token(user_id: UUID) -> str:
         """Create a JWT refresh token."""
-        expire = datetime.utcnow() + timedelta(days=settings.refresh_token_expire_days)
+        expire = datetime.now(UTC) + timedelta(days=settings.refresh_token_expire_days)
         to_encode = {"sub": str(user_id), "exp": expire, "type": "refresh"}
         return jwt.encode(to_encode, settings.secret_key, algorithm=settings.algorithm)
 

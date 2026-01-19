@@ -1,6 +1,6 @@
 """Task service for business logic."""
 
-from datetime import datetime, date
+from datetime import UTC, date, datetime
 from typing import Optional
 from uuid import UUID
 
@@ -75,11 +75,11 @@ class TaskService:
         # Handle status changes
         if "status" in update_data:
             if update_data["status"] == TaskStatus.DONE and task.status != TaskStatus.DONE:
-                update_data["completed_at"] = datetime.utcnow()
+                update_data["completed_at"] = datetime.now(UTC)
             elif update_data["status"] != TaskStatus.DONE:
                 update_data["completed_at"] = None
 
-        update_data["updated_at"] = datetime.utcnow()
+        update_data["updated_at"] = datetime.now(UTC)
 
         for key, value in update_data.items():
             setattr(task, key, value)

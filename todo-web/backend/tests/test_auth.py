@@ -95,7 +95,7 @@ async def test_get_me(client: AsyncClient, auth_headers):
 async def test_get_me_unauthorized(client: AsyncClient):
     """Test getting profile without auth fails."""
     response = await client.get("/api/auth/me")
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio

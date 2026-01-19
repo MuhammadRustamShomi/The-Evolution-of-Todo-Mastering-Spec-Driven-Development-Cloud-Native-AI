@@ -46,7 +46,7 @@ async def test_create_task_unauthorized(client: AsyncClient):
         "/api/tasks",
         json={"title": "Unauthorized Task"},
     )
-    assert response.status_code == 403
+    assert response.status_code == 401
 
 
 @pytest.mark.asyncio

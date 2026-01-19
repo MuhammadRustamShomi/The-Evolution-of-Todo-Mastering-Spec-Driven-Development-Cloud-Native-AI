@@ -5,7 +5,8 @@ from enum import Enum
 from typing import Optional
 from uuid import UUID, uuid4
 
-from sqlmodel import Field, SQLModel, Column, ARRAY, String
+from sqlalchemy import JSON
+from sqlmodel import Field, SQLModel, Column
 
 
 class TaskStatus(str, Enum):
@@ -32,7 +33,7 @@ class TaskBase(SQLModel):
     status: TaskStatus = Field(default=TaskStatus.PENDING)
     priority: TaskPriority = Field(default=TaskPriority.MEDIUM)
     due_date: Optional[date] = None
-    tags: list[str] = Field(default_factory=list, sa_column=Column(ARRAY(String)))
+    tags: list[str] = Field(default_factory=list, sa_column=Column(JSON))
 
 
 class Task(TaskBase, table=True):
