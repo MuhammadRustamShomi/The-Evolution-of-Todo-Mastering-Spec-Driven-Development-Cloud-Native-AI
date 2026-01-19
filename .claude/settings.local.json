@@ -35,7 +35,8 @@
       "Bash(openssl rand:*)",
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjZiNTQyNC0zOTllLTQwZjUtOGQyOC02MmUzYmYyNTczNzAiLCJleHAiOjE3Njg4MTg0NzksInR5cGUiOiJhY2Nlc3MifQ.TUtvDdIZgKuQEdAdwL7prfgwfv4md_k1Yy1SGFOQy3Q\")",
       "Bash(python -m json.tool:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "WebFetch(domain:backend-fawn-gamma-90.vercel.app)"
     ]
   }
 }
