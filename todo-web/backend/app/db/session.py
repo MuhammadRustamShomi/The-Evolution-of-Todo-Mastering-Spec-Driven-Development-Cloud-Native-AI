@@ -1,7 +1,9 @@
 """Database session configuration."""
 
 import os
+import re
 from collections.abc import AsyncGenerator
+from urllib.parse import parse_qs, urlencode, urlparse, urlunparse
 
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +13,35 @@ from sqlmodel import SQLModel
 from app.config import get_settings
 
 settings = get_settings()
+
+
+def fix_asyncpg_url(database_url: str) -> str:
+    """Fix PostgreSQL URL for asyncpg compatibility.
+
+    asyncpg doesn't accept 'sslmode' parameter - it uses 'ssl' instead.
+    This function converts sslmode=require to ssl=require for asyncpg.
+    """
+    if "asyncpg" not in database_url:
+        return database_url
+
+    parsed = urlparse(database_url)
+    if not parsed.query:
+        return database_url
+
+    # Parse query parameters
+    params = parse_qs(parsed.query)
+
+    # Convert sslmode to ssl for asyncpg
+    if "sslmode" in params:
+        sslmode_value = params.pop("sslmode")[0]
+        # asyncpg uses ssl=true or ssl parameter differently
+        # For most cases, sslmode=require translates to ssl=require
+        params["ssl"] = [sslmode_value]
+
+    # Rebuild the URL
+    new_query = urlencode(params, doseq=True)
+    new_parsed = parsed._replace(query=new_query)
+    return urlunparse(new_parsed)
 
 # Use NullPool for serverless environments (Vercel, AWS Lambda, etc.)
 # This prevents connection pool issues in ephemeral compute
@@ -30,7 +61,9 @@ else:
     engine_kwargs["pool_size"] = 5
     engine_kwargs["max_overflow"] = 10
 
-engine = create_async_engine(settings.database_url, **engine_kwargs)
+# Fix the database URL for asyncpg compatibility
+database_url = fix_asyncpg_url(settings.database_url)
+engine = create_async_engine(database_url, **engine_kwargs)
 
 async_session = sessionmaker(
     engine,

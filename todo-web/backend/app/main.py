@@ -42,6 +42,22 @@ def create_app() -> FastAPI:
     app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
     app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
 
+    @app.get("/")
+    async def root():
+        """Root endpoint with API information."""
+        return {
+            "name": settings.app_name,
+            "version": settings.app_version,
+            "status": "running",
+            "endpoints": {
+                "health": "/health",
+                "ready": "/ready",
+                "docs": "/docs",
+                "auth": "/api/auth",
+                "tasks": "/api/tasks",
+            },
+        }
+
     @app.get("/health")
     async def health_check():
         """Health check endpoint."""

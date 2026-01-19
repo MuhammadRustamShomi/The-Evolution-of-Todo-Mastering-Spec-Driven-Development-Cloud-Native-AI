@@ -24,7 +24,18 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: Complete Phase I-IV implementation\n\nProject: The Evolution of Todo - Mastering Spec-Driven Development & Cloud Native AI\n\nCompleted:\n- Phase I: Console App \\(Python CLI with 71 passing tests\\)\n- Phase II: Web App \\(FastAPI backend + Next.js frontend\\)\n- Phase III: AI Chatbot \\(OpenAI Agents SDK + MCP integration\\)\n- Phase IV: Local Kubernetes \\(Helm charts ready\\)\n\nIncludes:\n- Comprehensive specification documents \\(specify.md, plan.md, tasks.md\\)\n- Project constitution for governance\n- Docker Compose setup for local development\n- Full test suites for all phases\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
       "Bash(git branch:*)",
       "Bash(git push:*)",
-      "Bash(if exist .venv rmdir /s /q .venv)"
+      "Bash(if exist .venv rmdir /s /q .venv)",
+      "Bash(uv sync:*)",
+      "Bash(npm install:*)",
+      "Bash(npm test:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd Vercel deployment configuration for backend\n\n- Add vercel.json with Python runtime configuration\n- Add api/index.py serverless entry point\n- Add requirements.txt for Vercel dependencies\n- Update db/session.py with NullPool for serverless environments\n- Update config.py with flexible CORS origins \\(comma-separated\\)\n\nDeploy with: cd todo-web/backend && vercel\n\nRequired env vars:\n- DATABASE_URL: PostgreSQL connection string \\(Vercel Postgres/Neon/Supabase\\)\n- SECRET_KEY: JWT signing key\n- CORS_ORIGINS_STR: Comma-separated allowed origins\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(vercel:*)",
+      "Bash(neonctl:*)",
+      "Bash(curl:*)",
+      "Bash(openssl rand:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI2YjZiNTQyNC0zOTllLTQwZjUtOGQyOC02MmUzYmYyNTczNzAiLCJleHAiOjE3Njg4MTg0NzksInR5cGUiOiJhY2Nlc3MifQ.TUtvDdIZgKuQEdAdwL7prfgwfv4md_k1Yy1SGFOQy3Q\")",
+      "Bash(python -m json.tool:*)",
+      "Bash(git commit:*)"
     ]
   }
 }
